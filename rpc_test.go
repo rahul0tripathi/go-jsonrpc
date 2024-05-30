@@ -1479,7 +1479,7 @@ func TestReverseCallAliased(t *testing.T) {
 	}
 	closer, err := NewMergeClient(context.Background(), "ws://"+testServ.Listener.Addr().String(), "Server", []interface{}{
 		&client,
-	}, nil, WithClientHandler("Client", &RevCallTestClientHandler{}))
+	}, nil, WithClientHandler("Client", &RevCallTestClientHandler{}), WithClientHandlerAlias("rpc_thing", "Client.CallOnClient"))
 	require.NoError(t, err)
 
 	// do the call!
