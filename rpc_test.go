@@ -1494,8 +1494,8 @@ func TestReverseCallAliased(t *testing.T) {
 func TestReverseCallWithCustomSeparator(t *testing.T) {
 	// setup server
 
-	rpcServer := NewServer()
-	rpcServer.RegisterWithSeparator("Server", &RawParamHandler{}, "_")
+	rpcServer := NewServer(WithNamespaceSeprator("_"))
+	rpcServer.Register("Server", &RawParamHandler{})
 
 	// httptest stuff
 	testServ := httptest.NewServer(rpcServer)

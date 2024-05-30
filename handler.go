@@ -142,6 +142,7 @@ type handler struct {
 
 	paramDecoders         map[reflect.Type]ParamDecoder
 	methodCaseTransformer MethodCaseTransformer
+	separator             string
 }
 
 func makeHandler(sc ServerConfig) *handler {
@@ -154,12 +155,13 @@ func makeHandler(sc ServerConfig) *handler {
 
 		maxRequestSize:        sc.maxRequestSize,
 		methodCaseTransformer: sc.methodCaseTransformer,
+		separator:             sc.separator,
 	}
 }
 
 // Register
 
-func (s *handler) register(namespace string, r interface{}, separator string) {
+func (s *handler) register(namespace string, r interface{}) {
 	val := reflect.ValueOf(r)
 	// TODO: expect ptr
 
@@ -190,7 +192,7 @@ func (s *handler) register(namespace string, r interface{}, separator string) {
 			method.Name = s.methodCaseTransformer(method.Name)
 		}
 
-		s.methods[namespace+separator+method.Name] = methodHandler{
+		s.methods[namespace+s.separator+method.Name] = methodHandler{
 			paramReceivers: recvs,
 			nParams:        ins,
 

@@ -269,7 +269,7 @@ func websocketClient(
 		h := makeHandler(defaultServerConfig())
 		h.aliasedMethods = config.aliasedHandlerMethods
 		for _, reverseHandler := range config.reverseHandlers {
-			h.register(reverseHandler.ns, reverseHandler.hnd, _defaultSeparator)
+			h.register(reverseHandler.ns, reverseHandler.hnd)
 		}
 		hnd = h
 	}

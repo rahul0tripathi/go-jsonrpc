@@ -24,6 +24,7 @@ type ServerConfig struct {
 
 	reverseClientBuilder  func(context.Context, *wsConn) (context.Context, error)
 	methodCaseTransformer MethodCaseTransformer
+	separator             string
 }
 
 type ServerOption func(c *ServerConfig)
@@ -34,6 +35,7 @@ func defaultServerConfig() ServerConfig {
 		maxRequestSize: DEFAULT_MAX_REQUEST_SIZE,
 
 		pingInterval: 5 * time.Second,
+		separator:    _defaultSeparator,
 	}
 }
 
@@ -58,6 +60,12 @@ func WithServerErrors(es Errors) ServerOption {
 func WithServerPingInterval(d time.Duration) ServerOption {
 	return func(c *ServerConfig) {
 		c.pingInterval = d
+	}
+}
+
+func WithNamespaceSeprator(seprator string) ServerOption {
+	return func(c *ServerConfig) {
+		c.separator = seprator
 	}
 }
 

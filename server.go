@@ -143,11 +143,7 @@ func rpcError(wf func(func(io.Writer)), req *request, code ErrorCode, err error)
 //
 // Handler is any value with methods defined
 func (s *RPCServer) Register(namespace string, handler interface{}) {
-	s.register(namespace, handler, _defaultSeparator)
-}
-
-func (s *RPCServer) RegisterWithSeparator(namespace string, handler interface{}, separator string) {
-	s.register(namespace, handler, separator)
+	s.register(namespace, handler)
 }
 
 func (s *RPCServer) AliasMethod(alias, original string) {
