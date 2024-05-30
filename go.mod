@@ -1,4 +1,4 @@
-module github.com/filecoin-project/go-jsonrpc
+module github.com/rahul0tripathi/go-jsonrpc
 
 go 1.21
 
