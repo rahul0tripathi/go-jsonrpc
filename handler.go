@@ -157,7 +157,7 @@ func makeHandler(sc ServerConfig) *handler {
 
 // Register
 
-func (s *handler) register(namespace string, r interface{}) {
+func (s *handler) register(namespace string, r interface{}, separator string) {
 	val := reflect.ValueOf(r)
 	// TODO: expect ptr
 
@@ -185,7 +185,7 @@ func (s *handler) register(namespace string, r interface{}) {
 
 		valOut, errOut, _ := processFuncOut(funcType)
 
-		s.methods[namespace+"."+method.Name] = methodHandler{
+		s.methods[namespace+separator+method.Name] = methodHandler{
 			paramReceivers: recvs,
 			nParams:        ins,
 
@@ -352,7 +352,14 @@ func (s *handler) createError(err error) *respError {
 	return out
 }
 
-func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer)), rpcError rpcErrFunc, done func(keepCtx bool), chOut chanOut) {
+func (s *handler) handle(
+	ctx context.Context,
+	req request,
+	w func(func(io.Writer)),
+	rpcError rpcErrFunc,
+	done func(keepCtx bool),
+	chOut chanOut,
+) {
 	// Not sure if we need to sanitize the incoming req.Method or not.
 	ctx, span := s.getSpan(ctx, req)
 	ctx, _ = tag.New(ctx, tag.Insert(metrics.RPCMethod, req.Method))

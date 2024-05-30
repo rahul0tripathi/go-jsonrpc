@@ -91,7 +91,13 @@ type ClientCloser func()
 // handler must be pointer to a struct with function fields
 // Returned value closes the client connection
 // TODO: Example
-func NewClient(ctx context.Context, addr string, namespace string, handler interface{}, requestHeader http.Header) (ClientCloser, error) {
+func NewClient(
+	ctx context.Context,
+	addr string,
+	namespace string,
+	handler interface{},
+	requestHeader http.Header,
+) (ClientCloser, error) {
 	return NewMergeClient(ctx, addr, namespace, []interface{}{handler}, requestHeader)
 }
 
@@ -107,7 +113,14 @@ type client struct {
 
 // NewMergeClient is like NewClient, but allows to specify multiple structs
 // to be filled in the same namespace, using one connection
-func NewMergeClient(ctx context.Context, addr string, namespace string, outs []interface{}, requestHeader http.Header, opts ...Option) (ClientCloser, error) {
+func NewMergeClient(
+	ctx context.Context,
+	addr string,
+	namespace string,
+	outs []interface{},
+	requestHeader http.Header,
+	opts ...Option,
+) (ClientCloser, error) {
 	config := defaultConfig()
 	for _, o := range opts {
 		o(&config)
@@ -129,7 +142,14 @@ func NewMergeClient(ctx context.Context, addr string, namespace string, outs []i
 
 }
 
-func httpClient(ctx context.Context, addr string, namespace string, outs []interface{}, requestHeader http.Header, config Config) (ClientCloser, error) {
+func httpClient(
+	ctx context.Context,
+	addr string,
+	namespace string,
+	outs []interface{},
+	requestHeader http.Header,
+	config Config,
+) (ClientCloser, error) {
 	c := client{
 		namespace:     namespace,
 		paramEncoders: config.paramEncoders,
@@ -202,7 +222,14 @@ func httpClient(ctx context.Context, addr string, namespace string, outs []inter
 	}, nil
 }
 
-func websocketClient(ctx context.Context, addr string, namespace string, outs []interface{}, requestHeader http.Header, config Config) (ClientCloser, error) {
+func websocketClient(
+	ctx context.Context,
+	addr string,
+	namespace string,
+	outs []interface{},
+	requestHeader http.Header,
+	config Config,
+) (ClientCloser, error) {
 	connFactory := func() (*websocket.Conn, error) {
 		conn, _, err := websocket.DefaultDialer.Dial(addr, requestHeader)
 		if err != nil {
@@ -242,7 +269,7 @@ func websocketClient(ctx context.Context, addr string, namespace string, outs []
 		h := makeHandler(defaultServerConfig())
 		h.aliasedMethods = config.aliasedHandlerMethods
 		for _, reverseHandler := range config.reverseHandlers {
-			h.register(reverseHandler.ns, reverseHandler.hnd)
+			h.register(reverseHandler.ns, reverseHandler.hnd, _defaultSeparator)
 		}
 		hnd = h
 	}
