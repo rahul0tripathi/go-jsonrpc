@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/iancoleman/strcase"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1682,4 +1683,40 @@ func TestBigResult(t *testing.T) {
 	require.NoError(t, err)
 
 	fmt.Println("done")
+}
+
+type MethodTransformedHandler struct {
+}
+
+func (h *RawParamHandler) CallSomethingInSnakeCase(ctx context.Context, v int) (int, error) {
+	return v + 1, nil
+}
+
+func TestCallWithMethodTransformer(t *testing.T) {
+	// setup server
+
+	rpcServer := NewServer(WithMethodTransformer(strcase.ToSnake))
+	rpcServer.Register("Raw", &RawParamHandler{})
+
+	// httptest stuff
+	testServ := httptest.NewServer(rpcServer)
+	defer testServ.Close()
+
+	// setup client
+	var client struct {
+		Call func(ctx context.Context, v int) (int, error) `rpc_method:"Raw.call_something_in_snake_case"`
+	}
+	closer, err := NewMergeClient(context.Background(), "ws://"+testServ.Listener.Addr().String(), "Raw", []interface{}{
+		&client,
+	}, nil)
+	require.NoError(t, err)
+
+	// TestReverseCallWithCustomSeparator
+
+	// this will block if it's not sent as a notification
+	n, err := client.Call(context.Background(), 6)
+	require.NoError(t, err)
+	require.Equal(t, 7, n)
+
+	closer()
 }

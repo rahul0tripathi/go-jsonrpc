@@ -140,7 +140,8 @@ type handler struct {
 	// These are used as fallbacks if a method is not found by the given method name.
 	aliasedMethods map[string]string
 
-	paramDecoders map[reflect.Type]ParamDecoder
+	paramDecoders         map[reflect.Type]ParamDecoder
+	methodCaseTransformer MethodCaseTransformer
 }
 
 func makeHandler(sc ServerConfig) *handler {
@@ -151,7 +152,8 @@ func makeHandler(sc ServerConfig) *handler {
 		aliasedMethods: map[string]string{},
 		paramDecoders:  sc.paramDecoders,
 
-		maxRequestSize: sc.maxRequestSize,
+		maxRequestSize:        sc.maxRequestSize,
+		methodCaseTransformer: sc.methodCaseTransformer,
 	}
 }
 
@@ -184,6 +186,9 @@ func (s *handler) register(namespace string, r interface{}, separator string) {
 		}
 
 		valOut, errOut, _ := processFuncOut(funcType)
+		if s.methodCaseTransformer != nil {
+			method.Name = s.methodCaseTransformer(method.Name)
+		}
 
 		s.methods[namespace+separator+method.Name] = methodHandler{
 			paramReceivers: recvs,
