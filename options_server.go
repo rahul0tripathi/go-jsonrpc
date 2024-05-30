@@ -63,7 +63,7 @@ func WithServerPingInterval(d time.Duration) ServerOption {
 	}
 }
 
-func WithNamespaceSeprator(seprator string) ServerOption {
+func WithNamespaceSeparator(seprator string) ServerOption {
 	return func(c *ServerConfig) {
 		c.separator = seprator
 	}
